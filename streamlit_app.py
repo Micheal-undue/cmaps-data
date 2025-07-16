@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 st.set_page_config(layout="wide")
-st.title("📉 RUL 对比图：实际值 vs 预测值 vs 平均预测值")
+st.title("Evaluation of Predicted RUL Against True RUL")
 
 # GitHub 原始文件路径
 BASE_URL = "https://raw.githubusercontent.com/Micheal-undue/cmaps-data/main/"
@@ -35,9 +35,9 @@ for true_file, pred_file, title, y_ticks in file_pairs:
 
     # 控制开关
     col1, col2, col3 = st.columns(3)
-    show_true = col1.checkbox(f"显示实际值（{title}）", value=True, key=f"true_{title}")
-    show_pred = col2.checkbox(f"显示预测值（{title}）", value=True, key=f"pred_{title}")
-    show_avg = col3.checkbox(f"显示平均值（{title}）", value=True, key=f"avg_{title}")
+    show_true = col1.checkbox(f"True RUL（from text）（{title}）", value=True, key=f"true_{title}")
+    show_pred = col2.checkbox(f"Predicted RUL（{title}）", value=True, key=f"pred_{title}")
+    show_avg = col3.checkbox(f"Average（{title}）", value=True, key=f"avg_{title}")
 
     fig = go.Figure()
 
@@ -45,7 +45,7 @@ for true_file, pred_file, title, y_ticks in file_pairs:
         fig.add_trace(go.Scatter(
             y=df_true['RUL'],
             mode="lines",
-            name="实际值",
+            name="True RUL（from text）",
             line=dict(color="blue", dash="solid")
         ))
 
@@ -53,7 +53,7 @@ for true_file, pred_file, title, y_ticks in file_pairs:
         fig.add_trace(go.Scatter(
             y=df_pred['RUL'],
             mode="lines",
-            name="预测值",
+            name="Predicted RUL",
             line=dict(color="orange", dash="dash")
         ))
 
@@ -61,7 +61,7 @@ for true_file, pred_file, title, y_ticks in file_pairs:
         fig.add_trace(go.Scatter(
             y=avg_line,
             mode="lines",
-            name="平均值",
+            name="Average",
             line=dict(color="red", dash="dot")
         ))
 

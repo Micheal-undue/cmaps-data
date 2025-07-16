@@ -1,22 +1,22 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
 st.set_page_config(layout="wide")
-st.title("📉 RUL 真实值 vs 预测值 对比图（修正版）")
+st.title("📉 RUL 对比图：实际值 vs 预测值 vs 平均预测值")
 
-# GitHub 文件前缀
+# GitHub 原始文件路径
 BASE_URL = "https://raw.githubusercontent.com/Micheal-undue/cmaps-data/main/"
 
-# 文件配对
+# 文件配对 + 标题 + y轴配置
 file_pairs = [
-    ("RUL_FD001.txt", "predicted_rul1.csv"),
-    ("RUL_FD002.txt", "predicted_rul2.csv"),
-    ("RUL_FD003.txt", "predicted_rul3.csv"),
-    ("RUL_FD004.txt", "predicted_rul4.csv"),
+    ("RUL_FD001.txt", "predicted_rul1.csv", "FD001", list(range(0, 141, 20))),
+    ("RUL_FD002.txt", "predicted_rul2.csv", "FD002", list(range(0, 201, 25))),
+    ("RUL_FD003.txt", "predicted_rul3.csv", "FD003", list(range(0, 141, 20))),
+    ("RUL_FD004.txt", "predicted_rul4.csv", "FD004", list(range(0, 201, 25))),
 ]
 
-# 修复：读取 txt / csv
+# 加载数据
 def load_rul_file(file):
     if file.endswith(".txt"):
         df = pd.read_csv(BASE_URL + file, sep=r"\s+", header=None)
@@ -26,24 +26,53 @@ def load_rul_file(file):
     return df
 
 # 开始绘图
-for true_file, pred_file in file_pairs:
+for true_file, pred_file, title, y_ticks in file_pairs:
     df_true = load_rul_file(true_file)
     df_pred = load_rul_file(pred_file)
 
-    # 绘图
-    fig, ax = plt.subplots(figsize=(10, 4))
-    ax.plot(df_true.index, df_true['RUL'], label='True RUL', linestyle='-', color='blue')
-    ax.plot(df_pred.index, df_pred['RUL'], label='Predicted RUL', linestyle='--', color='orange')
+    avg_value = df_pred['RUL'].mean()
+    avg_line = [avg_value] * len(df_pred)
 
-    ax.set_title(f"{true_file} vs {pred_file}")
-    ax.set_xlabel("Index")
-    ax.set_ylabel("RUL")
+    # 控制开关
+    col1, col2, col3 = st.columns(3)
+    show_true = col1.checkbox(f"显示实际值（{title}）", value=True, key=f"true_{title}")
+    show_pred = col2.checkbox(f"显示预测值（{title}）", value=True, key=f"pred_{title}")
+    show_avg = col3.checkbox(f"显示平均值（{title}）", value=True, key=f"avg_{title}")
 
-    # 设置固定刻度
-    ax.set_yticks([20, 40, 60, 80, 100, 120, 140])
-    ax.set_ylim(0, 150)
+    fig = go.Figure()
 
-    ax.legend()
-    ax.grid(True)
-    st.pyplot(fig)
+    if show_true:
+        fig.add_trace(go.Scatter(
+            y=df_true['RUL'],
+            mode="lines",
+            name="实际值",
+            line=dict(color="blue", dash="solid")
+        ))
 
+    if show_pred:
+        fig.add_trace(go.Scatter(
+            y=df_pred['RUL'],
+            mode="lines",
+            name="预测值",
+            line=dict(color="orange", dash="dash")
+        ))
+
+    if show_avg:
+        fig.add_trace(go.Scatter(
+            y=avg_line,
+            mode="lines",
+            name="平均值",
+            line=dict(color="red", dash="dot")
+        ))
+
+    fig.update_layout(
+        title=title,
+        xaxis_title="Index",
+        yaxis_title="RUL",
+        yaxis=dict(tickmode='array', tickvals=y_ticks, range=[min(y_ticks), max(y_ticks)]),
+        legend=dict(x=0, y=1.15, orientation='h'),
+        height=400,
+        margin=dict(l=40, r=40, t=60, b=40)
+    )
+
+    st.plotly_chart(fig, use_container_width=True)

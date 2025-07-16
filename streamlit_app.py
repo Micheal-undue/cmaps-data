@@ -30,10 +30,6 @@ for true_file, pred_file in file_pairs:
     df_true = load_rul_file(true_file)
     df_pred = load_rul_file(pred_file)
 
-    # 调试：显示前几项检查是否读取正常
-    st.write(f"📄 文件: {pred_file}")
-    st.write("预测值前几项：", df_pred.head())
-
     # 绘图
     fig, ax = plt.subplots(figsize=(10, 4))
     ax.plot(df_true.index, df_true['RUL'], label='True RUL', linestyle='-', color='blue')

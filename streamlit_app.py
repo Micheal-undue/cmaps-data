@@ -67,7 +67,7 @@ for true_file, pred_file, title, y_ticks in file_pairs:
 
     fig.update_layout(
         title=title,
-        xaxis_title="Index",
+        xaxis_title="Engine ID",
         yaxis_title="RUL",
         yaxis=dict(tickmode='array', tickvals=y_ticks, range=[min(y_ticks), max(y_ticks)]),
         legend=dict(x=0, y=1.15, orientation='h'),

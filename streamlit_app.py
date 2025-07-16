@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 st.set_page_config(layout="wide")
-st.title("Evaluation of Predicted RUL Against True RUL")
+st.title("📉 RUL 真实值 vs 预测值 对比图（修正版）")
 
 # GitHub 文件前缀
 BASE_URL = "https://raw.githubusercontent.com/Micheal-undue/cmaps-data/main/"
@@ -35,8 +35,8 @@ for true_file, pred_file in file_pairs:
     ax.plot(df_true.index, df_true['RUL'], label='True RUL', linestyle='-', color='blue')
     ax.plot(df_pred.index, df_pred['RUL'], label='Predicted RUL', linestyle='--', color='orange')
 
-    ax.set_title(f"{true_file} ")
-    ax.set_xlabel("Engine ID")
+    ax.set_title(f"{true_file} vs {pred_file}")
+    ax.set_xlabel("Index")
     ax.set_ylabel("RUL")
 
     # 设置固定刻度
@@ -46,3 +46,4 @@ for true_file, pred_file in file_pairs:
     ax.legend()
     ax.grid(True)
     st.pyplot(fig)
+
